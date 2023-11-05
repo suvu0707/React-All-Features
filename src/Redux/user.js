@@ -1,64 +1,80 @@
-import React from 'react'
-import { useState } from 'react';
-import {useDispatch,useSelector} from 'react-redux'
+// User.js
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchUsers, addUser, updateUser, deleteUser } from './useractions';
 
 function User() {
-    const dispatch=useDispatch();
-    const alluser=useSelector(state=>state.Userlist)
-   const[name,pickName]=useState("");
-   const[age,pickAge]=useState("");
-   const[edu,pickEdu]=useState("");
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.Userlist.users);
 
-   const save=()=>{
-    var info={type:"uadd",userinfo:{name:name,age:age,edu:edu}}
+  const [name, pickName] = useState("")
+  const [photo, pickPhoto] = useState("")
+  const [details, pickDetails] = useState("")
+  const [qty, pickQty] = useState("")
+  const [price, pickPrice] = useState("");
 
-    return info;
-   }
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
 
-   const deleteUser=(index)=>{
-    var info={type:"udelete",userindex:index}
+  const addUserHandler = () => {
+    const newUser = { name, price, qty,details ,photo};
+    dispatch(addUser(newUser));
+    pickName("")
+    pickPhoto("")
+    pickDetails("")
+    pickQty("")
+    pickPrice("")
+  };
 
-    return info;
-   }
+  const updateUserHandler = (user) => {
+    dispatch(updateUser(user));
+  };
+
+  const deleteUserHandler = (userId) => {
+    dispatch(deleteUser(userId));
+  };
+
   return (
-    <div className="container">
-        <div className="row mt-4">
-            <div className="col-lg-12 text-center">
-                <h3 className="text-primary text-center mb-4">User Management</h3>
-                <input type="text" onChange={obj=>pickName(obj.target.value)} value={name} placeholder='Full Name'/>
-                <input type="text" onChange={obj=>pickAge(obj.target.value)} value={age} placeholder='Age'/>
-                <input type="text" onChange={obj=>pickEdu(obj.target.value)} value={edu} placeholder='Education'/>
-                <button onClick={()=>(dispatch(save()))} >Save</button>
-                <table className="table table-bordered mt-4">
-                    <thead>
-                        <tr>
-                            <th>User Index</th>
-                            <th>User Name</th>
-                            <th>User Age</th>
-                            <th>User Education</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {
-                            alluser.map((info,index)=>{
-                                return(
-                                    <tr key={index}>
-                                        <td>{index}</td>
-                                        <td>{info.name}</td>
-                                        <td>{info.age}</td>
-                                        <td>{info.edu}</td>
-                                        <td><button onClick={()=>(dispatch(deleteUser(index)))}>Delete</button></td>
-                                    </tr>
-                                )
-                            })
-                        }
-                    </tbody>
-                </table>
-            </div>
-        </div>
+    <div>
+      <h1>User Management</h1>
+      <div>
+            <input placeholder='Name' value={name} onChange={e => pickName(e.target.value)} />
+            <input placeholder='Price' value={price} onChange={e => pickPrice(e.target.value)} />
+            <input placeholder='Quantity' value={qty} onChange={e => pickQty(e.target.value)} />
+            <input placeholder='Photo' value={photo} onChange={e => pickPhoto(e.target.value)} />
+            <input placeholder='Details' value={details} onChange={e => pickDetails(e.target.value)} />
+        <button onClick={addUserHandler}>Add User</button>
+      </div>
+      <table className="table table-bordered mt-4">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Photo</th>
+            <th>Details</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.name}</td>
+              <td>{user.price}</td>
+              <td>{user.qty}</td>
+              <td>{user.details}</td>
+              <td>{user.photo}</td>
+              <td>
+                <button onClick={() => updateUserHandler(user)}>Edit</button>
+                <button onClick={() => deleteUserHandler(user.id)}>Delete</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
-  )
+  );
 }
 
-export default User
+export default User;

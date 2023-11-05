@@ -3,7 +3,7 @@
 
 import React from 'react'
 import Counter from './hoc'
-// function A({count,increment}) {
+
 function A(props) {
     const { count, increment,name,color } = props
 
